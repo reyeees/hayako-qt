@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Translation Extension Options</title>
+    <link rel="stylesheet" href="options.css"> <!-- CSS for styling -->
+</head>
+<body>
+    <div class="options-container">
+        <h2>Translation Extension Settings</h2>
+
+        <form id="options-form">
+            <!-- Theme Switcher Row -->
+            <div class="option-row">
+                <label for="theme-toggle">Dark Mode</label>
+                <input type="checkbox" id="theme-toggle">
+            </div>
+
+            <!-- Source Language Row -->
+            <div class="option-row">
+                <label for="source-lang">Source Language</label>
+                <select id="source-lang"></select>
+            </div>
+
+            <!-- Target Language Row -->
+            <div class="option-row">
+                <label for="target-lang">Target Language</label>
+                <select id="target-lang"></select>
+            </div>
+
+            <!-- Key Binding Row -->
+            <div class="option-row">
+                <label for="key-binding">Popup Key Binding</label>
+                <input type="text" id="key-binding" placeholder="Press a key" readonly>
+            </div>
+
+            <button type="submit">Save Settings</button>
+        </form>
+        <div id="message" class="message"></div>
+    </div>
+
+    <script src="../js/options.js"></script> <!-- JavaScript for functionality -->
+</body>
+</html>
