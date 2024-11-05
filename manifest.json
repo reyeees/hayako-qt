@@ -1,7 +1,9 @@
 {
     "manifest_version": 3,
     "name": "Hayako QT",
-    "version": "1.0",
+    "description": "Extension for translation without escaping the tab.",
+    "homepage_url": "https://github.com/reyeees/hayako-qt",
+    "version": "1.1",
     "permissions": ["activeTab", "scripting", "storage"],
     "content_scripts": [
       {
@@ -10,9 +12,9 @@
         "css": ["sheets/styles.css"]
       }
     ],
-    "applications": {
+    "browser_specific_settings": {
       "gecko": {
-        "id": "hayakoqt@reyes"
+        "id": "hayakoqt@reyesfonden"
       }
     },
     "background": {

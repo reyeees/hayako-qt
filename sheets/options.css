@@ -8,6 +8,23 @@ body {
     margin: 0;
 }
 
+h2, h3 {
+    text-align: center;
+}
+
+#links {
+    padding-bottom: 3px;
+    padding-top: 3px;
+}
+
+#links:link {
+    color: rgba(0, 123, 255, 0.5);
+}
+
+#links:visited {
+    color:rgba(0, 123, 255, 0.5)
+}
+
 /* Options Container */
 .options-container {
     font-family: Arial, sans-serif;

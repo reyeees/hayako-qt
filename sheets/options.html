@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Translation Extension Options</title>
+    <title>Hayako QT Options</title>
     <link rel="stylesheet" href="options.css"> <!-- CSS for styling -->
 </head>
 <body>
     <div class="options-container">
-        <h2>Translation Extension Settings</h2>
+        <h2>Hayako QT</h2>
 
         <form id="options-form">
             <!-- Theme Switcher Row -->
@@ -18,16 +18,16 @@
             </div>
 
             <!-- Source Language Row -->
-            <div class="option-row">
+            <!-- <div class="option-row">
                 <label for="source-lang">Source Language</label>
                 <select id="source-lang"></select>
-            </div>
+            </div> -->
 
             <!-- Target Language Row -->
-            <div class="option-row">
+            <!-- <div class="option-row">
                 <label for="target-lang">Target Language</label>
                 <select id="target-lang"></select>
-            </div>
+            </div> -->
 
             <!-- Key Binding Row -->
             <div class="option-row">
@@ -38,8 +38,15 @@
             <button type="submit">Save Settings</button>
         </form>
         <div id="message" class="message"></div>
-    </div>
 
+        <hr>
+        <h3>Information</h3>
+        <div id="info">
+            <a id="links" href="https://github.com/reyeees/hayako-qt" target=_blank"">GitHub Page</a>
+            <a id="links" href="https://github.com/reyeees/hayako-qt/blob/main/LICENSE" target=_blank"">MIT License</a>
+            <div id="version"></div>
+        </div>
+    </div>
     <script src="../js/options.js"></script> <!-- JavaScript for functionality -->
 </body>
 </html>
