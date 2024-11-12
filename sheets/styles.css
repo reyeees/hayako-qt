@@ -55,10 +55,11 @@
 /* Floating translate button styling */
 #translate-button {
   position: fixed;
+  color: #71777d;
   width: 25px;
   height: 25px;
   background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent black */
-  background-image: url('../icons/icon48.png'); /* Path to the icon image */
+  /* background-image: url('../icons/icon48.png');  Path to the icon image */
   background-size: 70%; /* Adjust icon size within the button */
   background-repeat: no-repeat;
   background-position: center;

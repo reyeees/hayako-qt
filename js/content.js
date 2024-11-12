@@ -1,3 +1,9 @@
+if (typeof browser === "undefined") {
+    var browser = chrome;
+}
+
+var uppposition = true;
+
 // let cursorX = 0;
 // let cursorY = 0;
 
@@ -54,6 +60,9 @@ function showTranslateButton(editableElement) {
   // Create the floating button
   const button = document.createElement("button");
   button.id = "translate-button";
+
+  const iconURL = browser.runtime.getURL("icons/icon48.png")
+  button.style.backgroundImage = `url("${iconURL}")`;
 
   const inputTop = editableElement.getBoundingClientRect().top;
   if ((window.innerHeight - inputTop) < (40 + 40)) {
@@ -168,7 +177,7 @@ async function showPopup(inputElement) {
   
     // Update popup position based on textarea height
     const popupRect = popup.getBoundingClientRect();
-    if (window.innerHeight > popupRect.height) {
+    if (uppposition) { // window.innerHeight > popupRect.height
       popup.style.top = `${inputRect.top - popupRect.height}px`;
     }
 
@@ -201,9 +210,11 @@ async function showPopup(inputElement) {
   if ((window.innerHeight - inputRect.top) < popupHeight) {
     // Position above cursor if not enough space below
     popup.style.top = `${inputRect.top - popupHeight}px`;
+    uppposition = true;
   } else {
     // Position below cursor
     popup.style.top = `${inputRect.top + inputRect.height + 10}px`;
+    uppposition = false;
   }
   popup.style.left = `${inputRect.left}px`;
   

@@ -1,3 +1,7 @@
+if (typeof browser === "undefined") {
+    var browser = chrome;
+}
+
 document.addEventListener("DOMContentLoaded", async () => {
     const { theme } = await browser.storage.local.get("theme");
     if (theme === 'dark' || theme === undefined) {

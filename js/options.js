@@ -1,3 +1,7 @@
+if (typeof browser === "undefined") {
+    var browser = chrome;
+}
+
 document.addEventListener("DOMContentLoaded", async () => {
     // const sourceLangSelect = document.getElementById("source-lang");
     // const targetLangSelect = document.getElementById("target-lang");
