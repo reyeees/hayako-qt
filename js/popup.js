@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const savedOptions = await browser.storage.local.get(['sourceLang', 'targetLang', "keyBinding"]);
     
     // Display the saved languages in the popup
-    sourceLangDisplay.textContent = savedOptions.sourceLang || "English"; // Default to English
-    targetLangDisplay.textContent = savedOptions.targetLang || "Spanish"; // Default to Spanish
+    sourceLangDisplay.textContent = savedOptions.sourceLang || "Auto Detect"; // Default to English
+    targetLangDisplay.textContent = savedOptions.targetLang || "English"; // Default to Spanish
     bindingHayaku.textContent = savedOptions.keybinding || "F8" // Default to F8
 });
