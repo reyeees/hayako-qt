@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Inputs Test</title>
+        <style>
+            .editable {
+                border: 1px solid #ccc;
+                padding: 10px;
+                width: 300px;
+                min-height: 50px;
+                margin: 20px;
+                font-size: 16px;
+                font-family: Arial, sans-serif;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="editable" contenteditable="true">Editable div</div>
+        <button id="insertText">Insert Text</button>
+
+        <textarea></textarea>
+        <input>
+        <hr>
+        <div class="editable" id="test-div" contenteditable="true">CR  LF</div>
+        <div>
+            <textarea id="test-ta"></textarea>
+            <button id="test-bt">Done</button>
+        </div>
+
+        <script>
+            let inputElement = document.getElementById("test-div");
+            let textArea = document.getElementById("test-ta");
+            let dnBut = document.getElementById("test-bt");
+
+            let currentCaretPosition = null;
+            let dynamicMarkers = [];
+            let div_num = 0;
+
+            function saveCaretPosition() {
+                const selection = window.getSelection();
+                if (selection.rangeCount > 0) {
+                    currentCaretPosition = selection.getRangeAt(0).cloneRange();
+                }
+            }
+
+
+            inputElement.addEventListener("keyup", saveCaretPosition);
+            inputElement.addEventListener("click", saveCaretPosition);
+
+            // dnBut.addEventListener("click", () => {
+            //     div_num += 1;
+            // })
+            textArea.addEventListener("click", () => {
+                div_num += 1;
+                dynamicMarkers.push(document.createTextNode(""))
+            });
+            textArea.addEventListener("input", () => {
+                if (currentCaretPosition) {
+                    const range = currentCaretPosition;
+
+                    // let dynamicMarker = dynamicMarkers[div_num]
+                    // if (dynamicMarker) {
+                    //     dynamicMarkers[div_num].remove();
+                    // }
+                    // console.log(dynamicMarker, div_num);
+
+                    // dynamicMarker = document.createElement("span");
+                    // dynamicMarker.className = `dynamic-text${div_num}`;
+                    // dynamicMarker.textContent = textArea.value;
+                    // if (dynamicMarkers[div_num] == null) 
+                        // dynamicMarkers.push(dynamicMarker);
+                    // console.log(dynamicMarkers);
+
+                    // const dynamicMarker = document.createTextNode(textArea.value);
+                    const dynamicMarker = dynamicMarkers[-1];
+                    dynamicMarker.value = textArea.value;
+
+                    // range.deleteContents();
+                    range.insertNode(dynamicMarker);
+
+                    range.setStartAfter(dynamicMarker);
+                    range.setEndAfter(dynamicMarker);
+
+                    const selection = window.getSelection();
+                    selection.removeAllRanges();
+                    selection.addRange(range);
+
+                    currentCaretPosition = range;
+
+                    textArea.focus();
+                }
+            });
+
+            function insertTextAtCaret(contenteditableElement, text) {
+                const selection = window.getSelection();
+                const range = selection.getRangeAt(0);
+
+                if (!contenteditableElement.contains(range.commonAncestorContainer)) {
+                    console.error("Caret is not inside the contenteditable element.");
+                    return;
+                }
+
+                range.deleteContents();
+                const textNode = document.createTextNode(text);
+                range.insertNode(textNode);
+
+                range.setStartAfter(textNode);
+                range.collapse(true);
+                selection.removeAllRanges();
+                selection.addRange(range);
+            }
+
+            document.getElementById("insertText").addEventListener("click", () => {
+                const editableDiv = document.querySelector(".editable");
+                insertTextAtCaret(editableDiv, "|[test]|");
+            });
+        </script>
+    </body>
+</html>

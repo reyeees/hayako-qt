@@ -1,21 +1,11 @@
-// add debounce to focused input listeners
-
 if (typeof browser === "undefined") {
     var browser = chrome;
 }
 
 var uppposition = true;
 
-// let cursorX = 0;
-// let cursorY = 0;
-
-// // Track cursor position on mouse movement
-// document.addEventListener("mousemove", (event) => {
-//   cursorX = event.clientX;
-//   cursorY = event.clientY;
-// });
-
 let inputFocused = null;
+let dynamicDivMarkers = []; // Man, that sucks
 let keyBinding = "F8";
 let caretPos = 0;
 let textArea;
@@ -25,7 +15,6 @@ async function updateKeyBinding() {
   keyBinding = newKey || "F8";
 }
 
-// Listen for storage changes (to update key binding if changed in options)
 browser.storage.onChanged.addListener((changes, area) => {
   if (area === "local" && changes.keyBinding) {
       keyBinding = changes.keyBinding.newValue || "F8";
@@ -34,54 +23,14 @@ browser.storage.onChanged.addListener((changes, area) => {
 
 async function getCaret(element) {
   if (element.isContentEditable) {
-    return document.getSelection().getRangeAt(0).startOffset;
-    // element.focus();
-    // const selection = window.getSelection();
-    // if (selection.rangeCount > 0) {
-    //   const range = selection.getRangeAt(0);
-    //   if (range.commonAncestorContainer.parentNode === element ||
-    //       element.contains(range.commonAncestorContainer)) {
-    //     const preCaretRange = range.cloneRange();
-    //     preCaretRange.selectNodeContents(element);
-    //     preCaretRange.setEnd(range.endContainer, range.endOffset);
-    //     return preCaretRange.toString().length;
-    //   }
-    // }
+    const selection = window.getSelection();
+    if (selection.rangeCount > 0) {
+      return selection.getRangeAt(0).cloneRange();
+    }
+    // return document.getSelection().getRangeAt(0).startOffset;
   }
   return element.selectionStart;
 }
-
-// async function setCaret(element, pos) {
-//   if (element.setSelectionRange) {
-//     // element.focus();
-//     element.setSelectionRange(pos, pos);
-//   } else {
-//     const range = document.createRange();
-//     const selection = window.getSelection();
-
-//     let currentNode = element.firstChild;
-//     let currentOffset = 0;
-
-//     while (currentNode) {
-//       if (currentNode.nodeType === Node.TEXT_NODE) {
-//         const nodeLength = currentNode.textContent.length;
-
-//         if (pos <= currentNode + nodeLength) {
-//           range.setStart(currentNode, position - currentOffset);
-//           range.collapse(true);
-//           break;
-//         }
-
-//         currentOffset += nodeLength;
-//       }
-//       currentNode = currentNode.nextSiling;
-//     }
-
-//     selection.removeAllRanges();
-//     selection.addRange(range);
-//     element.focus();
-//   } 
-// }
 
 function debounce(func, delay) {
   let timeoutId;
@@ -93,9 +42,9 @@ function debounce(func, delay) {
 
 const liveCaret = debounce(async (event) => {
   caretPos = await getCaret(event.target);
-  if (textArea != null) {
-    textArea.focus();
-  }
+  // if (textArea != null) {
+  //   textArea.focus();
+  // }
 }, 75); // 100ms maximum, 50ns minimum
 
 document.addEventListener("focusin", (event) => {
@@ -103,11 +52,12 @@ document.addEventListener("focusin", (event) => {
         event.target.tagName === "TEXTAREA" ||
         event.target.id.includes("input") || 
         event.target.id.includes("prompt") ||
-        event.target.id.includes("textarea")) 
+        event.target.id.includes("textarea")) // ||
+        // event.target.contentEditable === "true") // Was writing methods for contentEditable divs but not detecting them xD
         && !document.getElementById("translator-popup")) {
 
       event.target.addEventListener("click", liveCaret);
-      event.target.addEventListener("input", liveCaret);
+      event.target.addEventListener("keyup", liveCaret);
 
       inputFocused = event.target;
       showTranslateButton(event.target);
@@ -222,7 +172,7 @@ async function showPopup(inputElement) {
   });
 
   // Debounced function to send a translation request to background.js
-  const debouncedTranslate = debounce((text, original) => {
+  const debouncedTranslate = debounce((text) => {
     const sourceLang = mlangs[languages.indexOf(sourceLangSelect.value)];
     const targetLang = mlangs[languages.indexOf(targetLangSelect.value)];
 
@@ -232,21 +182,43 @@ async function showPopup(inputElement) {
       async (response) => {
         let translatedText = (response.isError ? response.errorMessage : response.resultText).trim();
         
-        const text_value = original.slice(0, caretPos) + translatedText + original.slice(caretPos);
         if (inputElement.tagName === "INPUT" || inputElement.tagName === "TEXTAREA") {
-          inputElement.value = text_value;
-          inputElement.selectionStart = inputElement.selectionEnd = caretPos + translatedText.length;
-        } else if (inputElement.contentEditable === "true") {
-          inputElement.innerText = text_value;
+          const start = inputElement.selectionStart;
+          const end = inputElement.selectionEnd;
 
-          const range = document.createRange();
-          const selection = window.getSelection();
-      
-          range.setStart(inputElement.firstChild, caretPos + translatedText.length); 
-          range.collapse(true);
-      
-          selection.removeAllRanges();
-          selection.addRange(range);
+          const actualCaretPos = caretPos !== undefined ? caretPos : start;
+          const beforeCaret = inputElement.value.slice(0, actualCaretPos);
+          const afterCaret = inputElement.value.slice(end);
+
+          inputElement.value = beforeCaret + translatedText + afterCaret;
+
+          const newCaretPosition = actualCaretPos + translatedText.length;
+          inputElement.selectionStart = inputElement.selectionEnd = newCaretPosition;
+        } else if (inputElement.contentEditable === "true") {
+          if (caretPos.cloneRange) {
+            const range = caretPos.cloneRange();
+
+            // if (dynamicDivMarker) {
+            //   dynamicDivMarker.remove();
+            // }
+
+            dynamicDivMarker = document.createElement("span");
+            dynamicDivMarker.className = `dynamic-text`;
+            dynamicDivMarker.textContent = translatedText;
+
+            range.deleteContents();
+            range.insertNode(dynamicDivMarker);
+
+            range.setStartAfter(dynamicDivMarker);
+            range.setEndAfter(dynamicDivMarker);
+
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+
+            caretPos = range;
+          }
+          // inputElement.innerText = original.slice(0, caretPos) + translatedText + original.slice(caretPos);
         }
 
         // setCaret(inputElement, caretPos + translatedText.length);
@@ -273,7 +245,7 @@ async function showPopup(inputElement) {
       value = inputElement.innerText;
     }
 
-    debouncedTranslate(textArea.value, value);
+    debouncedTranslate(textArea.value);
   });
   
   // Flex container for dropdowns and swap button
@@ -303,17 +275,6 @@ async function showPopup(inputElement) {
     uppposition = false;
   }
   popup.style.left = `${inputRect.left}px`;
-  
-  // const popupHeight = popup.getBoundingClientRect().height;
-  // if ((window.innerHeight - cursorY) < popupHeight + 10) {
-    //   // Position above cursor if not enough space below
-    //   popup.style.top = `${cursorY + window.scrollY - popupHeight - 10}px`;
-    // } else {
-  //   // Position below cursor
-  //   popup.style.top = `${cursorY + window.scrollY + 10}px`;
-  // }
-  // // popup.style.top = `${cursorY + window.scrollY - popup.getBoundingClientRect().height}px`;  // 100px above the cursor
-  // popup.style.left = `${cursorX}px`;
   
   textArea.focus();
 

@@ -1,12 +1,11 @@
 {
   "name": "hayakoqt",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "main": "index.js",
   "scripts": {
     "build:firefox": "webpack --config webpack.config.js --env browser=firefox --mode production --devtool false",
     "build:chrome": "webpack --config webpack.config.js --env browser=chrome --mode production --devtool false",
-    "watch:firefox": "webpack --config webpack.config.js --env browser=firefox--mode development --watch",
-    "watch:chrome": "webpack --config webpack.config.js --env browser=chrome --mode development --watch",
+    "watch": "webpack --config webpack.config.js --env browser=firefox --mode development --watch",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
